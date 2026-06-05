@@ -5,7 +5,7 @@ import { useCart } from '@/context/CartContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, User, ShoppingBag, Menu, X, LayoutDashboard, LogOut, ChevronDown } from 'lucide-react';
+import { Search, User, ShoppingBag, Menu, X, LogOut, ChevronDown } from 'lucide-react';
 import { getCategories, getActiveOffers } from '@/lib/api';
 
 export default function Navbar() {
@@ -138,12 +138,7 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
 
-            {user?.role === 'admin' && (
-              <Link href="/admin"
-                className="px-3 py-1.5 text-sm font-medium text-[#dc2626] flex items-center gap-1">
-                <LayoutDashboard size={13} /> Admin
-              </Link>
-            )}
+
           </nav>
 
           {/* Right icons */}
@@ -252,10 +247,7 @@ export default function Navbar() {
                   </div>
                 </div>
               )}
-              {user?.role === 'admin' && (
-                <Link href="/admin" onClick={() => setMobileOpen(false)}
-                  className="block py-2.5 text-sm font-bold text-[#dc2626] border-b border-gray-100">Admin Panel</Link>
-              )}
+
               <div className="pt-3 flex items-center justify-between">
                 {user ? (
                   <>
