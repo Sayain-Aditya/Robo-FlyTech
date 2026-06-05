@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { getCategories, createCategory, updateCategory, deleteCategory } from '@/lib/api';
+import { getCategories, createCategory, updateCategory, deleteCategory, uploadImage } from '@/lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Pencil, Trash2, X, Save, AlertCircle, Tag } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Save, AlertCircle, Tag, Upload, Link as LinkIcon } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 
 const EMPTY = { name: '', image: '' };
@@ -16,6 +16,8 @@ export default function AdminCategoriesPage() {
   const [error, setError]           = useState('');
   const [saving, setSaving]         = useState(false);
   const [deleteId, setDeleteId]     = useState(null);
+  const [imgTab, setImgTab]         = useState('upload'); // 'upload' | 'url'
+  const [uploading, setUploading]   = useState(false);
   const { showToast } = useToast();
 
   const load = () => {
@@ -24,8 +26,20 @@ export default function AdminCategoriesPage() {
   };
   useEffect(() => { load(); }, []);
 
-  const openAdd = () => { setEditing(null); setForm(EMPTY); setError(''); setModalOpen(true); };
-  const openEdit = (cat) => { setEditing(cat); setForm({ name: cat.name, image: cat.image || '' }); setError(''); setModalOpen(true); };
+  const openAdd = () => { setEditing(null); setForm(EMPTY); setError(''); setImgTab('upload'); setModalOpen(true); };
+  const openEdit = (cat) => { setEditing(cat); setForm({ name: cat.name, image: cat.image || '' }); setError(''); setImgTab(cat.image ? 'url' : 'upload'); setModalOpen(true); };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const res = await uploadImage(file);
+      setForm(f => ({ ...f, image: res.data.url }));
+    } catch {
+      setError('Image upload failed');
+    } finally { setUploading(false); }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -149,14 +163,55 @@ export default function AdminCategoriesPage() {
                       value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 uppercase tracking-wider mb-1.5">Image URL</label>
-                    <input className="input-field" type="text" placeholder="https://..."
-                      value={form.image} onChange={e => setForm(f => ({ ...f, image: e.target.value }))} />
+                    <label className="block text-xs text-gray-500 uppercase tracking-wider mb-1.5">Image</label>
+                    {/* Tabs */}
+                    <div className="flex border border-gray-200 mb-3">
+                      <button type="button"
+                        onClick={() => setImgTab('upload')}
+                        className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold tracking-widest uppercase transition-colors ${
+                          imgTab === 'upload' ? 'bg-[#0a0a0a] text-white' : 'text-gray-500 hover:text-[#0a0a0a]'
+                        }`}>
+                        <Upload size={11} /> Upload
+                      </button>
+                      <button type="button"
+                        onClick={() => setImgTab('url')}
+                        className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold tracking-widest uppercase transition-colors ${
+                          imgTab === 'url' ? 'bg-[#0a0a0a] text-white' : 'text-gray-500 hover:text-[#0a0a0a]'
+                        }`}>
+                        <LinkIcon size={11} /> URL
+                      </button>
+                    </div>
+                    {/* Upload tab */}
+                    {imgTab === 'upload' && (
+                      <label className={`flex flex-col items-center justify-center border-2 border-dashed border-gray-200 h-28 cursor-pointer hover:border-[#0a0a0a] transition-colors ${
+                        uploading ? 'opacity-50 pointer-events-none' : ''
+                      }`}>
+                        <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+                        {uploading ? (
+                          <div className="w-5 h-5 border-2 border-[#0a0a0a] border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <>
+                            <Upload size={20} className="text-gray-300 mb-2" />
+                            <span className="text-xs text-gray-400">Click to upload image</span>
+                          </>
+                        )}
+                      </label>
+                    )}
+                    {/* URL tab */}
+                    {imgTab === 'url' && (
+                      <input className="input-field" type="text" placeholder="https://..."
+                        value={form.image} onChange={e => setForm(f => ({ ...f, image: e.target.value }))} />
+                    )}
                   </div>
+                  {/* Preview */}
                   {form.image && (
-                    <div>
-                      <label className="block text-xs text-gray-500 uppercase tracking-wider mb-1.5">Preview</label>
+                    <div className="relative">
                       <img src={form.image} alt="preview" className="h-28 w-full object-cover border border-gray-200" />
+                      <button type="button"
+                        onClick={() => setForm(f => ({ ...f, image: '' }))}
+                        className="absolute top-1.5 right-1.5 bg-[#dc2626] text-white p-0.5 hover:bg-red-700 transition-colors">
+                        <X size={12} />
+                      </button>
                     </div>
                   )}
                   <div className="flex gap-3 pt-2">

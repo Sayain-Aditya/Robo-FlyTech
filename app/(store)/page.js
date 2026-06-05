@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { getProductsWithOffers, getActiveOffers } from '@/lib/api';
+import { getProductsWithOffers, getActiveOffers, getCategories } from '@/lib/api';
 import ProductCard from '@/components/store/ProductCard';
 import Navbar from '@/components/store/Navbar';
 import Link from 'next/link';
@@ -39,6 +39,7 @@ export default function HomePage() {
   const [flashOffer, setFlashOffer] = useState(null);
   const [heroIndex, setHeroIndex] = useState(0);
   const [heroSlides, setHeroSlides] = useState(HERO_SLIDES);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     getProductsWithOffers({ sort: 'newest', limit: 8 }).then(r => {
@@ -57,6 +58,7 @@ export default function HomePage() {
       }
     });
     const heroTimer = setInterval(() => setHeroIndex(i => (i + 1) % heroSlides.length), 4000);
+    getCategories().then(r => setCategories(r.data || [])).catch(() => {});
     getActiveOffers().then(r => {
       const offers = r.data || [];
       // pick the offer with highest value for the flash banner
@@ -229,11 +231,72 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ── SHOP BY CATEGORY ── */}
+        {categories.length > 0 && (
+          <section className="border-b border-gray-200">
+            <div className="max-w-[1400px] mx-auto px-4 md:px-6 pt-10 pb-12">
+              <div className="flex items-end justify-between mb-8">
+                <div>
+                  <p className="section-label mb-2">[ 002 / CATEGORIES ]</p>
+                  <h2 className="font-black text-[1.8rem] md:text-[2.8rem] tracking-[-0.03em] leading-none text-[#0a0a0a]">
+                    Shop by category.
+                  </h2>
+                </div>
+                <Link href="/products"
+                  className="flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-[#dc2626] transition-colors">
+                  All products <ArrowRight size={14} />
+                </Link>
+              </div>
+              <div className="grid grid-cols-3 md:grid-cols-6 border-l border-t border-gray-200">
+                {categories.map((cat, i) => (
+                  <motion.div
+                    key={cat._id}
+                    initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-40px' }}
+                    transition={{ delay: i * 0.07, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    className="border-r border-b border-gray-200"
+                  >
+                    <Link
+                      href={`/products?category=${cat.name}`}
+                      className="group relative flex flex-col justify-end overflow-hidden min-h-[140px] md:min-h-[160px]"
+                    >
+                      {/* Image */}
+                      {cat.image ? (
+                        <img
+                          src={cat.image}
+                          alt={cat.name}
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gray-100" />
+                      )}
+                      {/* Gradient overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      {/* Content */}
+                      <div className="relative z-10 p-5">
+                        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#dc2626] mb-1">
+                          {String(i + 1).padStart(2, '0')}
+                        </p>
+                        <h3 className="font-black text-lg md:text-xl tracking-[-0.02em] text-white leading-tight">
+                          {cat.name}
+                        </h3>
+                        <div className="flex items-center gap-1 mt-2 text-xs font-semibold text-white/60 group-hover:text-white transition-colors">
+                          Shop <ArrowRight size={11} className="group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* ── NEW & TRENDING ── */}
         <section className="max-w-[1400px] mx-auto px-4 md:px-6 pb-16 pt-10">
           <div className="flex items-end justify-between mb-8">
             <div>
-              <p className="section-label mb-2">[ 002 / CATALOGUE ]</p>
+              <p className="section-label mb-2">[ 003 / CATALOGUE ]</p>
               <h2 className="font-black text-[1.8rem] md:text-[2.8rem] tracking-[-0.03em] leading-none text-[#0a0a0a]">
                 New &amp; trending.
               </h2>

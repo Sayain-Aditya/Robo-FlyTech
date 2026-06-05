@@ -58,8 +58,9 @@ export default function Navbar() {
         <div className="max-w-[1400px] mx-auto px-6 h-14 flex items-center justify-between">
 
           {/* Logo */}
-          <Link href="/" className="shrink-0">
-            <img src="/logo.jpeg" alt="logo" className="h-10 w-auto object-contain" />
+          <Link href="/" className="shrink-0 flex items-center gap-2">
+            <img src="/logo.jpeg" alt="Robo Flytech" className="h-10 w-auto object-contain" />
+            <span className="hidden sm:inline-block text-sm font-bold uppercase tracking-[0.2em] text-[#0a0a0a]">Robo Flytech</span>
           </Link>
 
           {/* Nav links — centered */}
@@ -80,6 +81,15 @@ export default function Navbar() {
               Products
               <span className={`absolute bottom-0 left-0 right-0 h-0.5 bg-[#dc2626] origin-left transition-transform duration-300 ${
                 pathname.startsWith('/products') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+              }`} />
+            </Link>
+            <Link href="/about"
+              className={`px-3 py-1.5 text-sm font-medium transition-colors relative pb-1 group ${
+                pathname === '/about' ? 'text-[#dc2626]' : 'text-gray-600 hover:text-[#0a0a0a]'
+              }`}>
+              About Us
+              <span className={`absolute bottom-0 left-0 right-0 h-0.5 bg-[#dc2626] origin-left transition-transform duration-300 ${
+                pathname === '/about' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
               }`} />
             </Link>
 
@@ -211,6 +221,8 @@ export default function Navbar() {
                 className="block py-2.5 text-sm font-bold text-gray-700 hover:text-[#dc2626] border-b border-gray-100">Home</Link>
               <Link href="/products" onClick={() => setMobileOpen(false)}
                 className="block py-2.5 text-sm font-bold text-gray-700 hover:text-[#dc2626] border-b border-gray-100">Products</Link>
+              <Link href="/about" onClick={() => setMobileOpen(false)}
+                className="block py-2.5 text-sm font-bold text-gray-700 hover:text-[#dc2626] border-b border-gray-100">About Us</Link>
               {/* Mobile categories */}
               {categories.length > 0 && (
                 <div className="border-b border-gray-100">
