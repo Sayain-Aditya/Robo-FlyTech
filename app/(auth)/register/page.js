@@ -179,12 +179,12 @@ export default function RegisterPage() {
           transition={{ delay: 0.7 }}
           className="relative z-10 space-y-3">
           {[
-            ['✦', 'Fast shipping on all orders'],
-            ['✦', 'Exclusive member-only offers'],
-            ['✦', 'Track orders in real time'],
-          ].map(([icon, text]) => (
+            'Fast shipping on all orders',
+            'Exclusive member-only offers',
+            'Track orders in real time',
+          ].map((text) => (
             <div key={text} className="flex items-center gap-3">
-              <span className="text-[#dc2626] text-xs">{icon}</span>
+              <span className="w-1.5 h-1.5 bg-[#dc2626] inline-block shrink-0" />
               <span className="text-gray-400 text-xs">{text}</span>
             </div>
           ))}

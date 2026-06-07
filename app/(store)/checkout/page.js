@@ -6,15 +6,15 @@ import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { createOrder, getAddresses, addAddress, deleteAddress, updateAddress, getProfile } from '@/lib/api';
 import Link from 'next/link';
-import { ChevronRight, Lock, Plus, Trash2, ShieldCheck, Truck, Tag, Edit2, Check } from 'lucide-react';
+import { ChevronRight, Lock, Plus, Trash2, ShieldCheck, Truck, Tag, Edit2, Check, Banknote, Smartphone, Gift, PartyPopper } from 'lucide-react';
 import Footer from '@/components/store/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const STEPS = ['Address', 'Payment', 'Review', 'Confirm'];
 
 const PAYMENT_METHODS = [
-  { id: 'COD', label: 'Cash on Delivery', sub: 'Pay when your order arrives', icon: '💵' },
-  { id: 'UPI', label: 'UPI', sub: 'GPay, PhonePe, Paytm & more', icon: '📱' },
+  { id: 'COD', label: 'Cash on Delivery', sub: 'Pay when your order arrives', icon: <Banknote size={18} /> },
+  { id: 'UPI', label: 'UPI', sub: 'GPay, PhonePe, Paytm & more', icon: <Smartphone size={18} /> },
 ];
 
 // Sample coupons — replace with API call if needed
@@ -321,7 +321,7 @@ export default function CheckoutPage() {
                         }`}>
                           {paymentMethod === m.id && <div className="w-2 h-2 bg-[#0a0a0a] rounded-full" />}
                         </div>
-                        <span className="text-lg leading-none">{m.icon}</span>
+                        <span className="text-gray-500">{m.icon}</span>
                         <div>
                           <p className="text-sm font-bold text-[#0a0a0a]">{m.label}</p>
                           <p className="text-xs text-gray-400">{m.sub}</p>
@@ -371,9 +371,10 @@ export default function CheckoutPage() {
                       <button onClick={() => setStep(1)} className="text-[10px] font-bold tracking-widest uppercase text-[#dc2626] hover:text-[#b91c1c]">Change</button>
                     </div>
                     <div className="px-5 py-4">
-                      <p className="text-sm font-semibold text-[#0a0a0a]">
-                        {PAYMENT_METHODS.find(m => m.id === paymentMethod)?.icon} {PAYMENT_METHODS.find(m => m.id === paymentMethod)?.label}
-                      </p>
+                      <div className="flex items-center gap-2 text-sm font-semibold text-[#0a0a0a]">
+                        <span className="text-gray-500">{PAYMENT_METHODS.find(m => m.id === paymentMethod)?.icon}</span>
+                        {PAYMENT_METHODS.find(m => m.id === paymentMethod)?.label}
+                      </div>
                     </div>
                   </div>
 
@@ -411,7 +412,7 @@ export default function CheckoutPage() {
                     <p className="text-xs font-bold text-[#0a0a0a] mb-3 tracking-wide uppercase">Coupon Code</p>
                     {appliedCoupon ? (
                       <div className="flex items-center justify-between bg-green-50 border border-green-200 px-4 py-3">
-                        <p className="text-sm font-bold text-green-700">🎉 {appliedCoupon.code} — ₹{couponDiscount} off applied</p>
+                        <p className="text-sm font-bold text-green-700 flex items-center gap-1.5"><PartyPopper size={14} /> {appliedCoupon.code} — ₹{couponDiscount} off applied</p>
                         <button onClick={() => setAppliedCoupon(null)} className="text-xs text-gray-400 hover:text-[#dc2626]">Remove</button>
                       </div>
                     ) : (
@@ -467,7 +468,7 @@ export default function CheckoutPage() {
                     </div>
                     {totalSaved > 0 && (
                       <div className="px-4 py-3 bg-green-50">
-                        <p className="text-sm font-bold text-green-700">🎉 You Saved ₹{totalSaved.toLocaleString()} on this order!</p>
+                        <p className="text-sm font-bold text-green-700 flex items-center gap-1.5"><PartyPopper size={14} /> You Saved ₹{totalSaved.toLocaleString()} on this order!</p>
                       </div>
                     )}
                   </div>
@@ -519,8 +520,8 @@ export default function CheckoutPage() {
                     <span className="font-black text-xl text-[#0a0a0a]">₹{total.toLocaleString()}</span>
                   </div>
                   {totalSaved > 0 && (
-                    <p className="text-[11px] text-green-600 font-semibold bg-green-50 px-3 py-2">
-                      🎉 You Saved ₹{totalSaved.toLocaleString()} on this order
+                    <p className="text-[11px] text-green-600 font-semibold bg-green-50 px-3 py-2 flex items-center gap-1.5">
+                      <PartyPopper size={12} /> You Saved ₹{totalSaved.toLocaleString()} on this order
                     </p>
                   )}
                 </div>

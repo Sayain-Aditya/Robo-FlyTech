@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/Toast';
 import { getProfile, updateProfile, changePassword, getMyOrders, getAddresses, addAddress, deleteAddress, getOrderById } from '@/lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, MapPin, Lock, ShoppingBag, Save, Eye, EyeOff, Package, LogOut, Settings, Heart, X, ChevronRight, Truck, CreditCard, Tag } from 'lucide-react';
+import { User, MapPin, Lock, ShoppingBag, Save, Eye, EyeOff, Package, LogOut, Settings, Heart, X, ChevronRight, Truck, CreditCard, Tag, PartyPopper } from 'lucide-react';
 
 const TABS = [
   { id: 'orders',   label: 'Orders',    icon: ShoppingBag },
@@ -533,8 +533,8 @@ export default function ProfilePage() {
                       const couponSave = selectedOrder.discount || 0;
                       const totalSave = offerSave + deliverySave + couponSave;
                       return totalSave > 0 ? (
-                        <p className="text-[11px] text-green-600 font-semibold bg-green-50 px-3 py-1.5">
-                          🎉 You saved ₹{totalSave.toLocaleString()} on this order
+                        <p className="text-[11px] text-green-600 font-semibold bg-green-50 px-3 py-1.5 flex items-center gap-1.5">
+                          <PartyPopper size={11} /> You saved ₹{totalSave.toLocaleString()} on this order
                         </p>
                       ) : null;
                     })()}

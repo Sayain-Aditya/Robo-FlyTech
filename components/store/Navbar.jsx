@@ -28,10 +28,10 @@ export default function Navbar() {
     getCategories().then(r => setCategories(r.data || [])).catch(() => {});
     getActiveOffers().then(r => {
       const offers = r.data || [];
-      const items = ['🚚 FAST SHIPPING ON ALL ORDERS'];
+      const items = ['FAST SHIPPING ON ALL ORDERS'];
       offers.forEach(o => {
         const val = o.type === 'percentage' ? `${o.value}% OFF` : `₹${o.value} OFF`;
-        items.unshift(`⚡ ${o.name?.toUpperCase() || 'FLASH SALE'} — UP TO ${val}`);
+        items.unshift(`${o.name?.toUpperCase() || 'FLASH SALE'} — UP TO ${val}`);
       });
       setTickerItems(items);
     }).catch(() => {});

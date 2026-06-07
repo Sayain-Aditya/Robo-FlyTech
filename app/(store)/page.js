@@ -385,7 +385,7 @@ export default function HomePage() {
 
         {/* ── FULL WIDTH CTA ── */}
         <section className="bg-[#0a0a0a]">
-          <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-16 md:py-20 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-10 md:py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
             <div>
               <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-gray-500 mb-3">[ 006 / GET STARTED ]</p>
               <h2 className="font-black text-[2rem] md:text-[3.5rem] leading-[0.92] tracking-[-0.04em] text-white">
