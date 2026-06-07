@@ -7,8 +7,16 @@
 @layer base {
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
+  img { max-width: 100%; height: auto; }
+
+  html {
+    overflow-x: hidden;
+  }
+
   body {
     min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
     background-color: #ffffff;
     color: #0a0a0a;
     font-family: 'Inter', system-ui, sans-serif;
@@ -265,6 +273,15 @@
   @keyframes shimmer {
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
+  }
+
+  /* ── Hide scrollbar utility ── */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 
   /* ── Ticker ── */

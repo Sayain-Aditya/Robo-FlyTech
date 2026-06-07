@@ -60,7 +60,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!mounted) return;
-    if (!user) { router.push('/login'); return; }
+    if (!user) { router.replace('/login'); return; }
     getProfile().then(r => {
       setProfile(r.data);
       setProfileForm({ name: r.data.name || '', email: r.data.email || '', phone: r.data.phone || '' });

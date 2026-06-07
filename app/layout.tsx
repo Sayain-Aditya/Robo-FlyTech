@@ -1,7 +1,7 @@
 import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
 import { ToastProvider } from '@/components/Toast';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
+import FloatButtons from '@/components/WhatsAppFloat';
 import './globals.css';
 
 export const metadata = {
@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CartProvider>
             <ToastProvider>
               {children}
-              <WhatsAppFloat />
+              <FloatButtons />
             </ToastProvider>
           </CartProvider>
         </AuthProvider>

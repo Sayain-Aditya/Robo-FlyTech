@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/store/Navbar';
 import { useCart } from '@/context/CartContext';
@@ -8,6 +8,7 @@ import { createOrder, getAddresses, addAddress, deleteAddress, updateAddress, ge
 import Link from 'next/link';
 import { ChevronRight, Lock, Plus, Trash2, ShieldCheck, Truck, Tag, Edit2, Check } from 'lucide-react';
 import Footer from '@/components/store/Footer';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const STEPS = ['Address', 'Payment', 'Review', 'Confirm'];
 
@@ -30,6 +31,8 @@ export default function CheckoutPage() {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [orderPlaced, setOrderPlaced] = useState(false);
+  const videoRef = useRef(null);
 
   // address
   const [savedAddresses, setSavedAddresses] = useState([]);
@@ -146,7 +149,7 @@ export default function CheckoutPage() {
       });
       clearCart();
       clearBuyNow();
-      router.push('/order-success');
+      setOrderPlaced(true);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to place order. Please try again.');
       setLoading(false);
@@ -168,7 +171,7 @@ export default function CheckoutPage() {
     </>
   );
 
-  if (cartItems.length === 0) { router.push('/products'); return null; }
+  if (cartItems.length === 0 && !orderPlaced) { router.replace('/products'); return null; }
 
   return (
     <>
@@ -533,6 +536,41 @@ export default function CheckoutPage() {
         </div>
       </main>
       <Footer />
+
+      {/* ── ORDER SUCCESS MODAL ── */}
+      <AnimatePresence>
+        {orderPlaced && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[999] flex items-center justify-center bg-black/80">
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+              className="relative flex flex-col items-center gap-4 px-6">
+              <video
+                ref={videoRef}
+                src="/orderplace.mp4"
+                autoPlay
+                muted
+                playsInline
+                onEnded={() => router.replace('/order-success')}
+                className="w-64 h-64 sm:w-80 sm:h-80 object-contain"
+              />
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="text-center">
+                <p className="text-white font-black text-2xl tracking-tight">Order Placed!</p>
+                <p className="text-gray-400 text-sm mt-1">Taking you to your order summary...</p>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

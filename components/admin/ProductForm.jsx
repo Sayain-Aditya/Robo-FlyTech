@@ -76,6 +76,7 @@ export default function ProductForm({ initial, onSuccess, onClose }) {
     returnsEnabled: data.returnsEnabled || false,
     returnDays:     data.returnDays     || 7,
     freeShipping:   data.freeShipping   || false,
+    shippingEnabled: data.shippingEnabled || false,
   });
   const [categories, setCategories] = useState([]);
   const [error, setError]       = useState('');
@@ -381,20 +382,38 @@ export default function ProductForm({ initial, onSuccess, onClose }) {
         </div>
       </div>
 
-      {/* Free Shipping */}
-      <div className="flex items-center justify-between border border-gray-200 px-4 py-3">
-        <div>
-          <p className="text-xs font-bold text-[#0a0a0a]">Free Shipping</p>
-          <p className="text-[10px] text-gray-400">Enable free shipping for this product</p>
+      {/* Shipping */}
+      <div className="border border-gray-200">
+        <div className="flex items-center justify-between px-4 py-3">
+          <div>
+            <p className="text-xs font-bold text-[#0a0a0a]">Shipping</p>
+            <p className="text-[10px] text-gray-400">Show shipping info on product page</p>
+          </div>
+          <button type="button" onClick={() => set('shippingEnabled', !form.shippingEnabled)}
+            className={`w-10 h-5 rounded-full transition-colors relative ${
+              form.shippingEnabled ? 'bg-[#0a0a0a]' : 'bg-gray-200'
+            }`}>
+            <div className={`w-4 h-4 bg-white rounded-full absolute top-0.5 transition-all ${
+              form.shippingEnabled ? 'left-5' : 'left-0.5'
+            }`} />
+          </button>
         </div>
-        <button type="button" onClick={() => set('freeShipping', !form.freeShipping)}
-          className={`w-10 h-5 rounded-full transition-colors relative ${
-            form.freeShipping ? 'bg-[#0a0a0a]' : 'bg-gray-200'
-          }`}>
-          <div className={`w-4 h-4 bg-white rounded-full absolute top-0.5 transition-all ${
-            form.freeShipping ? 'left-5' : 'left-0.5'
-          }`} />
-        </button>
+        {form.shippingEnabled && (
+          <div className="flex items-center justify-between px-4 pb-3 border-t border-gray-100 pt-3">
+            <div>
+              <p className="text-xs font-bold text-[#0a0a0a]">Free Shipping</p>
+              <p className="text-[10px] text-gray-400">No delivery charges for this product</p>
+            </div>
+            <button type="button" onClick={() => set('freeShipping', !form.freeShipping)}
+              className={`w-10 h-5 rounded-full transition-colors relative ${
+                form.freeShipping ? 'bg-[#0a0a0a]' : 'bg-gray-200'
+              }`}>
+              <div className={`w-4 h-4 bg-white rounded-full absolute top-0.5 transition-all ${
+                form.freeShipping ? 'left-5' : 'left-0.5'
+              }`} />
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="flex gap-3 pt-2">

@@ -11,8 +11,8 @@ export default function AdminLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (!user) router.push('/login');
-    else if (user.role !== 'admin') router.push('/');
+    if (!user) router.replace('/login');
+    else if (user.role !== 'admin') router.replace('/');
   }, [user]);
 
   if (!user || user.role !== 'admin') return null;

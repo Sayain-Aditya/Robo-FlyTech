@@ -20,7 +20,7 @@ export default function LoginPage() {
     try {
       const { data } = await loginUser(form);
       login(data);
-      router.push(data.role === 'admin' ? '/admin' : '/');
+      router.replace(data.role === 'admin' ? '/admin' : '/');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
       setLoading(false);
@@ -95,10 +95,15 @@ export default function LoginPage() {
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className="w-full max-w-md">
 
-          {/* Mobile logo */}
-          <div className="flex items-center gap-3 mb-10 lg:hidden">
-            <img src="/logo.jpeg" alt="Logo" className="h-9 w-9 object-contain" />
-            <span className="font-black text-sm tracking-widest uppercase text-[#0a0a0a]">RoboStore</span>
+          {/* Mobile logo + back */}
+          <div className="flex items-center justify-between mb-10 lg:hidden">
+            <div className="flex items-center gap-3">
+              <img src="/logo.jpeg" alt="Logo" className="h-9 w-9 object-contain" />
+              <span className="font-black text-sm tracking-widest uppercase text-[#0a0a0a]">RoboStore</span>
+            </div>
+            <Link href="/" className="text-xs font-bold text-gray-400 hover:text-[#0a0a0a] transition-colors">
+              ← Back
+            </Link>
           </div>
 
           <p className="text-[11px] font-bold tracking-[0.3em] uppercase text-[#dc2626] mb-2">[ ACCOUNT / LOGIN ]</p>

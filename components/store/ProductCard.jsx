@@ -82,43 +82,49 @@ export default function ProductCard({ product, index }) {
         )}
 
         {/* Price row + Add button */}
-        <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
-          <div className="flex items-baseline gap-2">
-            <span className="text-base font-bold text-[#0a0a0a]">
-              ₹{displayPrice.toLocaleString()}
-            </span>
-            {displayOriginal && (
-              <span className="text-xs text-gray-400 line-through">
-                ₹{displayOriginal.toLocaleString()}
-              </span>
-            )}
-          </div>
-
+        <div className="mt-2 pt-2 border-t border-gray-100">
           <AnimatePresence mode="wait">
             {qtyInCart > 0 ? (
               <motion.div key="qty"
                 initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.15 }}
-                className="flex items-center border border-[#0a0a0a]">
-                <button onClick={handleDecrease}
-                  className="w-8 h-8 flex items-center justify-center text-[#0a0a0a] hover:bg-gray-100 border-r border-[#0a0a0a]">
-                  <Minus size={11} />
-                </button>
-                <span className="w-7 text-center text-xs font-bold text-[#0a0a0a]">{qtyInCart}</span>
-                <button onClick={handleAdd}
-                  className="w-8 h-8 flex items-center justify-center text-[#0a0a0a] hover:bg-gray-100 border-l border-[#0a0a0a]">
-                  <Plus size={11} />
-                </button>
+                className="flex items-center justify-between gap-1">
+                <div className="flex items-baseline gap-1 min-w-0">
+                  <span className="text-sm font-bold text-[#0a0a0a] truncate">₹{displayPrice.toLocaleString()}</span>
+                  {displayOriginal && (
+                    <span className="text-[10px] text-gray-400 line-through shrink-0">₹{displayOriginal.toLocaleString()}</span>
+                  )}
+                </div>
+                <div className="flex items-center border border-[#0a0a0a] shrink-0">
+                  <button onClick={handleDecrease}
+                    className="w-6 h-6 flex items-center justify-center text-[#0a0a0a] hover:bg-gray-100 border-r border-[#0a0a0a]">
+                    <Minus size={9} />
+                  </button>
+                  <span className="w-5 text-center text-[11px] font-bold text-[#0a0a0a]">{qtyInCart}</span>
+                  <button onClick={handleAdd}
+                    className="w-6 h-6 flex items-center justify-center text-[#0a0a0a] hover:bg-gray-100 border-l border-[#0a0a0a]">
+                    <Plus size={9} />
+                  </button>
+                </div>
               </motion.div>
             ) : (
-              <motion.button key="add"
+              <motion.div key="add"
                 initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.15 }}
-                onClick={handleAdd}
-                disabled={product.stock === 0}
-                className="w-9 h-9 bg-[#0a0a0a] text-white flex items-center justify-center hover:bg-[#dc2626] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-                <Plus size={16} />
-              </motion.button>
+                className="flex items-center justify-between gap-2">
+                <div className="flex items-baseline gap-1 min-w-0">
+                  <span className="text-sm font-bold text-[#0a0a0a] truncate">₹{displayPrice.toLocaleString()}</span>
+                  {displayOriginal && (
+                    <span className="text-[10px] text-gray-400 line-through shrink-0">₹{displayOriginal.toLocaleString()}</span>
+                  )}
+                </div>
+                <button
+                  onClick={handleAdd}
+                  disabled={product.stock === 0}
+                  className="w-7 h-7 bg-[#0a0a0a] text-white flex items-center justify-center hover:bg-[#dc2626] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
+                  <Plus size={13} />
+                </button>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>

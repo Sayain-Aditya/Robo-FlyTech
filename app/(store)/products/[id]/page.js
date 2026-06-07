@@ -79,8 +79,8 @@ export default function ProductDetailPage() {
   return (
     <>
       <Navbar />
-      <main className="bg-white min-h-screen">
-        <div className="max-w-[1400px] mx-auto px-6 py-8">
+      <main className="bg-white min-h-screen overflow-x-hidden">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
 
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-[11px] font-semibold tracking-widest uppercase text-gray-400 mb-8">
@@ -100,26 +100,22 @@ export default function ProductDetailPage() {
           </div>
 
           {/* ── MAIN PRODUCT SECTION ── */}
-          <div className="grid lg:grid-cols-2 gap-16 mb-20">
+          <div className="grid lg:grid-cols-2 gap-0 lg:gap-16 mb-20">
 
             {/* LEFT — Images */}
-            <motion.div
-              initial={{ opacity: 0, x: -24 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
-
+            <div className="w-full min-w-0">
               {/* Main image */}
-              <div className="relative overflow-hidden bg-gray-50 aspect-[4/3] mb-3">
+              <div className="relative bg-gray-50 mb-3 w-full overflow-hidden">
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={activeImg}
                     src={images[activeImg]}
                     alt={product.name}
-                    initial={{ opacity: 0, scale: 1.04 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.35 }}
-                    className="w-full h-full object-cover"
+                    transition={{ duration: 0.3 }}
+                    className="w-full h-auto block"
                   />
                 </AnimatePresence>
 
@@ -154,10 +150,10 @@ export default function ProductDetailPage() {
 
               {/* Thumbnails */}
               {images.length > 1 && (
-                <div className="flex gap-2">
+                <div className="flex gap-2 px-4 sm:px-0 mb-6 overflow-x-auto scrollbar-hide">
                   {images.map((img, i) => (
                     <button key={i} onClick={() => setActiveImg(i)}
-                      className={`w-16 h-16 overflow-hidden border-2 transition-colors ${
+                      className={`w-16 h-16 shrink-0 overflow-hidden border-2 transition-colors ${
                         activeImg === i ? 'border-[#0a0a0a]' : 'border-gray-100 hover:border-gray-300'
                       }`}>
                       <img src={img} alt="" className="w-full h-full object-cover" />
@@ -165,14 +161,10 @@ export default function ProductDetailPage() {
                   ))}
                 </div>
               )}
-            </motion.div>
+            </div>
 
             {/* RIGHT — Info */}
-            <motion.div
-              initial={{ opacity: 0, x: 24 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col">
+            <div className="flex flex-col pt-6 lg:pt-0 min-w-0">
 
               {/* Brand + Category */}
               <p className="text-[11px] font-bold tracking-[0.25em] uppercase text-[#dc2626] mb-3">
@@ -281,28 +273,27 @@ export default function ProductDetailPage() {
                 </button>
               )}
 
-              {/* Perks */}
-              <div className={`grid grid-cols-${[true, product.warrantyEnabled, product.returnsEnabled].filter(Boolean).length > 2 ? 3 : 2} border border-gray-100 divide-x divide-gray-100 mb-6`}>
-                <div className="flex flex-col items-center gap-1.5 py-4 px-2 text-center">
-                  <Truck size={16} className="text-gray-400" />
-                  <p className="text-[11px] font-bold text-[#0a0a0a]">{product.freeShipping ? 'Free Shipping' : 'Fast Shipping'}</p>
-                  <p className="text-[10px] text-gray-400">{product.freeShipping ? 'No extra charges' : 'Quick delivery'}</p>
-                </div>
-                {product.warrantyEnabled && (
-                  <div className="flex flex-col items-center gap-1.5 py-4 px-2 text-center">
-                    <ShieldCheck size={16} className="text-gray-400" />
-                    <p className="text-[11px] font-bold text-[#0a0a0a]">Warranty</p>
-                    <p className="text-[10px] text-gray-400">{product.warrantyDuration} {product.warrantyUnit}</p>
+              {(() => {
+                const perks = [
+                  product.shippingEnabled && { icon: Truck, title: product.freeShipping ? 'Free Shipping' : 'Fast Shipping', sub: product.freeShipping ? 'No extra charges' : 'Quick delivery' },
+                  product.warrantyEnabled && { icon: ShieldCheck, title: 'Warranty', sub: `${product.warrantyDuration} ${product.warrantyUnit}` },
+                  product.returnsEnabled  && { icon: RotateCcw,   title: 'Easy Returns', sub: `${product.returnDays || 7} days return` },
+                ].filter(Boolean);
+                if (!perks.length) return null;
+                return (
+                  <div className={`grid border border-gray-100 divide-x divide-gray-100 mb-6 ${
+                    perks.length === 3 ? 'grid-cols-3' : perks.length === 2 ? 'grid-cols-2' : 'grid-cols-1'
+                  }`}>
+                    {perks.map(({ icon: Icon, title, sub }) => (
+                      <div key={title} className="flex flex-col items-center gap-1.5 py-4 px-2 text-center">
+                        <Icon size={16} className="text-gray-400" />
+                        <p className="text-[11px] font-bold text-[#0a0a0a]">{title}</p>
+                        <p className="text-[10px] text-gray-400">{sub}</p>
+                      </div>
+                    ))}
                   </div>
-                )}
-                {product.returnsEnabled && (
-                  <div className="flex flex-col items-center gap-1.5 py-4 px-2 text-center">
-                    <RotateCcw size={16} className="text-gray-400" />
-                    <p className="text-[11px] font-bold text-[#0a0a0a]">Easy Returns</p>
-                    <p className="text-[10px] text-gray-400">{product.returnDays || 7} days return</p>
-                  </div>
-                )}
-              </div>
+                );
+              })()}
 
               {/* Stock indicator */}
               {product.stock <= 10 && (
@@ -313,7 +304,7 @@ export default function ProductDetailPage() {
                   </span>
                 </div>
               )}
-            </motion.div>
+            </div>
           </div>
 
           {/* ── TABS ── */}
@@ -344,11 +335,11 @@ export default function ProductDetailPage() {
               {/* Specifications */}
               {activeTab === 0 && (
                 specs.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-3 border-l border-t border-gray-200">
+                  <div className="border border-gray-200 divide-y divide-gray-100 max-w-lg">
                     {specs.map(({ label, value }) => (
-                      <div key={label} className="border-r border-b border-gray-200 p-6">
-                        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 mb-2">{label}</p>
-                        <p className="text-sm font-semibold text-[#0a0a0a]">{value}</p>
+                      <div key={label} className="flex items-baseline justify-between px-4 py-2.5 gap-8">
+                        <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-gray-400 shrink-0">{label}</span>
+                        <span className="text-sm font-semibold text-[#0a0a0a] text-right">{value}</span>
                       </div>
                     ))}
                   </div>
