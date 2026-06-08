@@ -5,7 +5,6 @@ const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
-  const [buyNowItem, setBuyNowItem] = useState(null);
 
   useEffect(() => {
     const stored = localStorage.getItem('techstore_cart');
@@ -32,16 +31,9 @@ export function CartProvider({ children }) {
 
   const clearCart = () => saveCart([]);
 
-  // buyNow: sets a single-item session for direct checkout
-  const buyNow = (product, qty = 1) => setBuyNowItem({ ...product, qty });
-  const clearBuyNow = () => setBuyNowItem(null);
-
-  const activeItems = buyNowItem ? [buyNowItem] : cartItems;
-
-  const totalItems = activeItems.reduce((s, i) => s + i.qty, 0);
-  const totalPrice = activeItems.reduce((s, i) => s + (i.offerPrice || i.price) * i.qty, 0);
-  const mrpTotal   = activeItems.reduce((s, i) => {
-    // If offer applied: price is base price (MRP). If deal badge: originalPrice is MRP.
+  const totalItems = cartItems.reduce((s, i) => s + i.qty, 0);
+  const totalPrice = cartItems.reduce((s, i) => s + (i.offerPrice || i.price) * i.qty, 0);
+  const mrpTotal   = cartItems.reduce((s, i) => {
     const mrp = i.offerPrice ? i.price : (i.originalPrice || i.price);
     return s + mrp * i.qty;
   }, 0);
@@ -49,10 +41,8 @@ export function CartProvider({ children }) {
 
   return (
     <CartContext.Provider value={{
-      cartItems: activeItems,
-      rawCartItems: cartItems,
-      buyNowItem,
-      addToCart, removeFromCart, updateQty, clearCart, buyNow, clearBuyNow,
+      cartItems,
+      addToCart, removeFromCart, updateQty, clearCart,
       totalItems, totalPrice, totalSavings, mrpTotal,
     }}>
       {children}

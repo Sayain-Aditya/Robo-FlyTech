@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/store/Navbar';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
@@ -26,9 +26,31 @@ const VALID_COUPONS = [
 ];
 
 export default function CheckoutPage() {
-  const { cartItems, totalPrice, totalSavings, mrpTotal, clearCart, clearBuyNow } = useCart();
+  const { cartItems, totalPrice, totalSavings, mrpTotal, clearCart } = useCart();
   const { user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Get Buy Now item from sessionStorage if redirected from product page
+  const [buyNowData, setBuyNowData] = useState(null);
+  
+  useEffect(() => {
+    if (searchParams.get('buyNow') === 'true') {
+      const data = sessionStorage.getItem('buyNowItem');
+      if (data) {
+        setBuyNowData(JSON.parse(data));
+      }
+    }
+  }, [searchParams]);
+  
+  // Use buyNow items if available, otherwise cart items
+  const checkoutItems = buyNowData ? [buyNowData] : cartItems;
+  const checkoutTotalPrice = buyNowData 
+    ? (buyNowData.offerPrice || buyNowData.price) * buyNowData.qty
+    : totalPrice;
+  const checkoutMrpTotal = buyNowData
+    ? (buyNowData.offerPrice ? buyNowData.price : (buyNowData.originalPrice || buyNowData.price)) * buyNowData.qty
+    : mrpTotal;
 
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -55,14 +77,14 @@ export default function CheckoutPage() {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponError, setCouponError] = useState('');
 
-  const shippingCost = totalPrice > 999 ? 0 : 99;
+  const shippingCost = checkoutTotalPrice > 999 ? 0 : 99;
   const couponDiscount = appliedCoupon
     ? appliedCoupon.type === 'percentage'
-      ? Math.round(totalPrice * appliedCoupon.value / 100)
+      ? Math.round(checkoutTotalPrice * appliedCoupon.value / 100)
       : appliedCoupon.value
     : 0;
-  const total = totalPrice + shippingCost - couponDiscount;
-  const totalSaved = (mrpTotal - totalPrice) + (shippingCost === 0 ? 99 : 0) + couponDiscount;
+  const total = checkoutTotalPrice + shippingCost - couponDiscount;
+  const totalSaved = (checkoutMrpTotal - checkoutTotalPrice) + (shippingCost === 0 ? 99 : 0) + couponDiscount;
 
   useEffect(() => {
     if (!user) return;
@@ -104,7 +126,7 @@ export default function CheckoutPage() {
     setCouponError('');
     const found = VALID_COUPONS.find(c => c.code === couponInput.trim().toUpperCase());
     if (!found) return setCouponError('Invalid coupon code');
-    if (totalPrice < found.min) return setCouponError(`Minimum order ₹${found.min} required`);
+    if (checkoutTotalPrice < found.min) return setCouponError(`Minimum order ₹${found.min} required`);
     setAppliedCoupon(found);
     setCouponInput('');
   };
@@ -140,18 +162,18 @@ export default function CheckoutPage() {
     setLoading(true); setError('');
     try {
       await createOrder({
-        items: cartItems.map(i => ({ product: i._id, name: i.name, image: i.image, price: i.offerPrice || i.price, originalPrice: i.price, quantity: i.qty })),
+        items: checkoutItems.map(i => ({ product: i._id, name: i.name, image: i.image, price: i.offerPrice || i.price, originalPrice: i.price, quantity: i.qty })),
         shippingAddress: activeShipping(),
         paymentMethod,
-        itemsPrice: totalPrice,
+        itemsPrice: checkoutTotalPrice,
         shippingPrice: shippingCost,
         totalPrice: total,
-        originalItemsPrice: mrpTotal,
+        originalItemsPrice: checkoutMrpTotal,
         couponCode: appliedCoupon?.code || '',
         discount: couponDiscount,
       });
-      clearCart();
-      clearBuyNow();
+      if (!buyNowData) clearCart();
+      if (buyNowData) sessionStorage.removeItem('buyNowItem');
       if (typeof window !== 'undefined') sessionStorage.setItem('lastOrderPaymentMethod', paymentMethod);
       setOrderPlaced(true);
     } catch (err) {
@@ -175,7 +197,7 @@ export default function CheckoutPage() {
     </>
   );
 
-  if (cartItems.length === 0 && !orderPlaced) { router.replace('/products'); return null; }
+  if (checkoutItems.length === 0 && !orderPlaced) { router.replace('/products'); return null; }
 
   return (
     <>
@@ -421,10 +443,10 @@ export default function CheckoutPage() {
                   <ScaleIn delay={0.2} className="border border-gray-200">
                     <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
                       <Tag size={15} className="text-[#dc2626]" />
-                      <p className="text-sm font-black tracking-tight text-[#0a0a0a]">Order Items ({cartItems.length})</p>
+                      <p className="text-sm font-black tracking-tight text-[#0a0a0a]">Order Items ({checkoutItems.length})</p>
                     </div>
                     <StaggerContainer className="divide-y divide-gray-100">
-                      {cartItems.map((item, idx) => {
+                      {checkoutItems.map((item, idx) => {
                         const salePrice = item.offerPrice || item.price;
                         const mrp = item.originalPrice || item.price;
                         return (
@@ -488,8 +510,8 @@ export default function CheckoutPage() {
                   </div>
                   <div className="text-left border border-gray-100 divide-y divide-gray-100">
                     <div className="flex justify-between px-4 py-3 text-sm">
-                      <span className="text-gray-500">Items ({cartItems.reduce((s,i) => s+i.qty,0)})</span>
-                      <span className="font-semibold">₹{totalPrice.toLocaleString()}</span>
+                      <span className="text-gray-500">Items ({checkoutItems.reduce((s,i) => s+i.qty,0)})</span>
+                      <span className="font-semibold">₹{checkoutTotalPrice.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between px-4 py-3 text-sm">
                       <span className="text-gray-500">Delivery</span>
@@ -535,13 +557,13 @@ export default function CheckoutPage() {
                 </div>
                 <div className="p-5 space-y-3">
                   <div className="flex justify-between text-sm text-gray-600">
-                    <span>MRP ({cartItems.length} item{cartItems.length > 1 ? 's' : ''})</span>
-                    <span>₹{mrpTotal.toLocaleString()}</span>
+                    <span>MRP ({checkoutItems.length} item{checkoutItems.length > 1 ? 's' : ''})</span>
+                    <span>₹{checkoutMrpTotal.toLocaleString()}</span>
                   </div>
-                  {mrpTotal > totalPrice && (
+                  {checkoutMrpTotal > checkoutTotalPrice && (
                     <div className="flex justify-between text-sm text-green-600 font-semibold">
                       <span>Product Discount</span>
-                      <span>- ₹{(mrpTotal - totalPrice).toLocaleString()}</span>
+                      <span>- ₹{(checkoutMrpTotal - checkoutTotalPrice).toLocaleString()}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm text-gray-600">

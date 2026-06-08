@@ -19,7 +19,7 @@ export default function ProductDetailPage() {
   const [related, setRelated]       = useState([]);
   const [activeTab, setActiveTab]   = useState(0);
   const [activeImg, setActiveImg]   = useState(0);
-  const { addToCart, updateQty, removeFromCart, cartItems, buyNow } = useCart();
+  const { addToCart, updateQty, removeFromCart, cartItems } = useCart();
 
   useEffect(() => {
     // Fetch product with offer applied in one reliable call
@@ -267,7 +267,10 @@ export default function ProductDetailPage() {
               {/* Buy Now */}
               {product.stock > 0 && (
                 <button
-                  onClick={() => { buyNow(product); router.push('/checkout'); }}
+                  onClick={() => {
+                    sessionStorage.setItem('buyNowItem', JSON.stringify({ ...product, qty: 1 }));
+                    router.push('/checkout?buyNow=true');
+                  }}
                   className="h-12 border border-[#0a0a0a] flex items-center justify-center text-xs font-bold tracking-widest uppercase text-[#0a0a0a] hover:bg-[#0a0a0a] hover:text-white transition-colors mb-6 w-full">
                   Buy Now
                 </button>
