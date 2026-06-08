@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/store/Navbar';
 import { useCart } from '@/context/CartContext';
@@ -19,13 +19,12 @@ const PAYMENT_METHODS = [
   { id: 'UPI', label: 'UPI', sub: 'Admin will contact you via WhatsApp', icon: <Smartphone size={18} /> },
 ];
 
-// Sample coupons — replace with API call if needed
 const VALID_COUPONS = [
   { code: 'FIRST10', type: 'percentage', value: 10, min: 500 },
   { code: 'FLAT200', type: 'flat', value: 200, min: 1000 },
 ];
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const { cartItems, totalPrice, totalSavings, mrpTotal, clearCart } = useCart();
   const { user } = useAuth();
   const router = useRouter();
@@ -642,5 +641,24 @@ export default function CheckoutPage() {
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <>
+        <Navbar />
+        <main className="bg-white min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="skeleton h-12 w-48 mx-auto mb-4" />
+            <div className="skeleton h-6 w-64 mx-auto" />
+          </div>
+        </main>
+        <Footer />
+      </>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }

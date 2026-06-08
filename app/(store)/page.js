@@ -60,7 +60,7 @@ export default function HomePage() {
         <section className="border-b border-gray-200">
 
           {/* MOBILE HERO */}
-          <div className="relative md:hidden h-[88vh] min-h-[500px] overflow-hidden">
+          <div className="relative md:hidden h-[70vh] min-h-[400px] overflow-hidden">
             {heroSlides.map((slide, i) => (
               <motion.div key={i} initial={false}
                 animate={{ opacity: heroIndex === i ? 1 : 0 }}
@@ -242,7 +242,7 @@ export default function HomePage() {
                   All products <ArrowRight size={14} />
                 </Link>
               </div>
-              <div className="grid grid-cols-3 md:grid-cols-6 border-l border-t border-gray-200">
+              <div className="grid grid-cols-2 md:grid-cols-6 border-l border-t border-gray-200">
                 {categories.map((cat, i) => (
                   <motion.div key={cat._id}
                     initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
@@ -338,7 +338,7 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 border-l border-t border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-4 border-l border-t border-gray-200">
               {products.map((p, i) => (
                 <motion.div key={p._id}
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
