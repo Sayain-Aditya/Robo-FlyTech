@@ -251,11 +251,6 @@ export default function ProductDetailPage() {
                         </motion.button>
                       )}
                     </AnimatePresence>
-
-                    {/* Wishlist */}
-                    <button className="w-12 h-12 border border-gray-200 flex items-center justify-center text-gray-400 hover:border-[#dc2626] hover:text-[#dc2626] transition-colors">
-                      <Heart size={16} />
-                    </button>
                   </div>
                 );
               })() : (
