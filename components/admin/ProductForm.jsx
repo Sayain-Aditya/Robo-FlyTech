@@ -79,21 +79,56 @@ export default function ProductForm({ initial, onSuccess, onClose }) {
     shippingEnabled: data.shippingEnabled || false,
   });
   const [categories, setCategories] = useState([]);
+  const [categoriesLoaded, setCategoriesLoaded] = useState(false);
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
   const [uploading, setUploading] = useState(false);
+
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  // Auto-fill specifications when category changes (only for new products)
+  const handleCategoryChange = (newCategory) => {
+    if (!isEdit) {
+      const selectedCat = categories.find(c => c.name === newCategory);
+      if (selectedCat?.specifications?.length > 0) {
+        setForm(f => ({
+          ...f,
+          category: newCategory,
+          specifications: selectedCat.specifications.map(spec => ({
+            label: spec.label,
+            value: spec.value || ''
+          }))
+        }));
+      } else {
+        setForm(f => ({
+          ...f,
+          category: newCategory,
+          specifications: [{ label: '', value: '' }]
+        }));
+      }
+    } else {
+      set('category', newCategory);
+    }
+  };
 
   useEffect(() => {
     getCategories().then(r => {
       const cats = r.data || [];
       setCategories(cats);
-      if (!form.category && cats.length > 0) {
-        setForm(f => ({ ...f, category: f.category || cats[0].name }));
+      
+      if (!isEdit && cats.length > 0 && !form.category) {
+        const firstCat = cats[0];
+        setForm(f => ({ 
+          ...f, 
+          category: firstCat.name,
+          specifications: firstCat.specifications?.length > 0 
+            ? firstCat.specifications.map(spec => ({ label: spec.label, value: spec.value || '' }))
+            : [{ label: '', value: '' }]
+        }));
       }
+      setCategoriesLoaded(true);
     });
   }, []);
-
-  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   const setSpec = (i, key, val) =>
     setForm(f => {
@@ -276,10 +311,13 @@ export default function ProductForm({ initial, onSuccess, onClose }) {
 
       <div>
         <label className="block text-xs text-gray-500 uppercase tracking-wider mb-1.5">Category</label>
-        <select className="input-field" value={form.category} onChange={e => set('category', e.target.value)}>
+        <select className="input-field" value={form.category} onChange={e => handleCategoryChange(e.target.value)}>
           {categories.length === 0 && <option value="">Loading categories...</option>}
           {categories.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
         </select>
+        {!isEdit && form.category && categories.find(c => c.name === form.category)?.specifications?.length > 0 && (
+          <p className="text-[10px] text-green-600 mt-1">✓ Specification fields auto-filled from category template</p>
+        )}
       </div>
 
       {/* Specifications */}

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, X, Save, AlertCircle, Tag, Upload, Link as LinkIcon } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 
-const EMPTY = { name: '', image: '' };
+const EMPTY = { name: '', image: '', specifications: [{ label: '', value: '' }] };
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState([]);
@@ -27,7 +27,17 @@ export default function AdminCategoriesPage() {
   useEffect(() => { load(); }, []);
 
   const openAdd = () => { setEditing(null); setForm(EMPTY); setError(''); setImgTab('upload'); setModalOpen(true); };
-  const openEdit = (cat) => { setEditing(cat); setForm({ name: cat.name, image: cat.image || '' }); setError(''); setImgTab(cat.image ? 'url' : 'upload'); setModalOpen(true); };
+  const openEdit = (cat) => { 
+    setEditing(cat); 
+    setForm({ 
+      name: cat.name, 
+      image: cat.image || '',
+      specifications: cat.specifications?.length > 0 ? cat.specifications : [{ label: '', value: '' }]
+    }); 
+    setError(''); 
+    setImgTab(cat.image ? 'url' : 'upload'); 
+    setModalOpen(true); 
+  };
 
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -162,6 +172,51 @@ export default function AdminCategoriesPage() {
                     <input className="input-field" type="text" required placeholder="e.g. Laptops"
                       value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
                   </div>
+
+                  {/* Specifications */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-xs text-gray-500 uppercase tracking-wider">Specifications Template</label>
+                      <button type="button" onClick={() => setForm(f => ({ ...f, specifications: [...f.specifications, { label: '', value: '' }] }))}
+                        className="flex items-center gap-1 text-xs font-bold text-[#0a0a0a] hover:text-[#dc2626] transition-colors">
+                        <Plus size={12} /> Add Field
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      {form.specifications.map((spec, i) => (
+                        <div key={i} className="flex items-center gap-2">
+                          <input
+                            placeholder="Label (e.g. Processor)"
+                            value={spec.label}
+                            onChange={e => {
+                              const specs = [...form.specifications];
+                              specs[i] = { ...specs[i], label: e.target.value };
+                              setForm(f => ({ ...f, specifications: specs }));
+                            }}
+                            className="input-field flex-1 text-xs"
+                          />
+                          <input
+                            placeholder="Default value (optional)"
+                            value={spec.value}
+                            onChange={e => {
+                              const specs = [...form.specifications];
+                              specs[i] = { ...specs[i], value: e.target.value };
+                              setForm(f => ({ ...f, specifications: specs }));
+                            }}
+                            className="input-field flex-1 text-xs"
+                          />
+                          <button type="button" onClick={() => setForm(f => ({ ...f, specifications: f.specifications.filter((_, idx) => idx !== i) }))}
+                            className="p-1.5 text-gray-400 hover:text-[#dc2626] transition-colors shrink-0">
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    {form.specifications.length === 0 && (
+                      <p className="text-xs text-gray-400 mt-1">No specification fields. Products will use generic fields.</p>
+                    )}
+                  </div>
+
                   <div>
                     <label className="block text-xs text-gray-500 uppercase tracking-wider mb-1.5">Image</label>
                     {/* Tabs */}
