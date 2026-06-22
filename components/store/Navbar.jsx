@@ -80,12 +80,11 @@ export default function Navbar() {
 
       {/* Main nav */}
       <div className="border-b border-gray-200 bg-white">
-        <div className="max-w-[1400px] mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-[1400px] mx-auto px-6 h-14 flex items-center justify-between overflow-clip">
 
           {/* Logo */}
           <Link href="/" className="shrink-0 flex items-center gap-2">
-            <img src="/logo.jpeg" alt="Robo Flytech" className="h-10 w-auto object-contain" />
-            <span className="hidden sm:inline-block text-sm font-bold uppercase tracking-[0.2em] text-[#0a0a0a]">Robo Flytech</span>
+            <img src="/roboflytech-logo.jpeg" alt="Robo Flytech" className="h-20 w-auto object-contain" />
           </Link>
 
           {/* Nav links — centered */}
