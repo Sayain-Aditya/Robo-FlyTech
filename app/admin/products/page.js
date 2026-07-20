@@ -8,41 +8,36 @@ import { useToast } from '@/components/Toast';
 
 export default function AdminProductsPage() {
   const [products, setProducts]   = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing]     = useState(null);       // null = add, object = edit
-  const [deleteId, setDeleteId]   = useState(null);       // confirm delete modal
+  const [editing, setEditing]     = useState(null);
+  const [deleteId, setDeleteId]   = useState(null);
+  const [page, setPage]           = useState(1);
+  const [pages, setPages]         = useState(1);
+  const [total, setTotal]         = useState(0);
   const { showToast } = useToast();
 
-  const load = () => getProducts({ limit: 100 }).then(r => {
+  const load = (p = 1, search = '') => getProducts({ limit: 30, page: p, ...(search ? { search } : {}) }).then(r => {
     setProducts(r.data.products);
-    setFilteredProducts(r.data.products);
+    setPages(r.data.pages || 1);
+    setTotal(r.data.total || 0);
   });
-  useEffect(() => { load(); }, []);
+
+  useEffect(() => { load(page, searchQuery); }, [page]);
 
   useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredProducts(products);
-      return;
-    }
-    const query = searchQuery.toLowerCase();
-    const filtered = products.filter(p => 
-      p.name.toLowerCase().includes(query) ||
-      p.category.toLowerCase().includes(query) ||
-      p.brand.toLowerCase().includes(query)
-    );
-    setFilteredProducts(filtered);
-  }, [searchQuery, products]);
+    const t = setTimeout(() => { setPage(1); load(1, searchQuery); }, 400);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
 
   const openAdd  = ()        => { setEditing(null); setModalOpen(true); };
   const openEdit = (product) => { setEditing(product); setModalOpen(true); };
-  const onSuccess = () => { load(); showToast(editing ? 'Product updated' : 'Product created'); };
+  const onSuccess = () => { load(page, searchQuery); showToast(editing ? 'Product updated' : 'Product created'); };
 
   const confirmDelete = async () => {
     await deleteProduct(deleteId);
     setDeleteId(null);
-    load();
+    load(page, searchQuery);
     showToast('Product deleted', 'info');
   };
 
@@ -80,7 +75,7 @@ export default function AdminProductsPage() {
             </tr>
           </thead>
           <tbody>
-            {filteredProducts.map(p => (
+            {products.map(p => (
               <tr key={p._id}>
                 <td>
                   <img src={p.image || 'https://placehold.co/48x48?text=...'} alt={p.name}
@@ -111,20 +106,42 @@ export default function AdminProductsPage() {
             ))}
           </tbody>
         </table>
-        {filteredProducts.length === 0 && products.length > 0 && (
-          <div className="text-center py-14">
-            <p className="text-gray-400 text-sm">No products found matching "{searchQuery}"</p>
-          </div>
-        )}
         {products.length === 0 && (
           <div className="text-center py-14">
-            <p className="text-gray-400 text-sm mb-3">No products yet</p>
-            <button onClick={openAdd} className="btn-primary flex items-center gap-2 mx-auto px-5 py-2">
-              <Plus size={14} /> Add First Product
-            </button>
+            <p className="text-gray-400 text-sm mb-3">{searchQuery ? `No products found for "${searchQuery}"` : 'No products yet'}</p>
+            {!searchQuery && (
+              <button onClick={openAdd} className="btn-primary flex items-center gap-2 mx-auto px-5 py-2">
+                <Plus size={14} /> Add First Product
+              </button>
+            )}
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {pages > 1 && (
+        <div className="flex justify-between items-center mt-4">
+          <p className="text-xs text-gray-400">{total} products total</p>
+          <div className="flex items-center gap-1">
+            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
+              className="px-3 py-1.5 text-xs border border-gray-200 font-semibold text-gray-500 disabled:opacity-30 hover:border-[#0a0a0a] transition-colors">
+              ← Prev
+            </button>
+            {Array.from({ length: pages }, (_, i) => (
+              <button key={i} onClick={() => setPage(i + 1)}
+                className={`w-8 h-8 text-xs border font-bold transition-all ${
+                  page === i + 1 ? 'bg-[#0a0a0a] text-white border-[#0a0a0a]' : 'border-gray-200 text-gray-600 hover:border-[#0a0a0a]'
+                }`}>
+                {i + 1}
+              </button>
+            ))}
+            <button onClick={() => setPage(p => Math.min(pages, p + 1))} disabled={page === pages}
+              className="px-3 py-1.5 text-xs border border-gray-200 font-semibold text-gray-500 disabled:opacity-30 hover:border-[#0a0a0a] transition-colors">
+              Next →
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Add / Edit Modal */}
       <ProductModal

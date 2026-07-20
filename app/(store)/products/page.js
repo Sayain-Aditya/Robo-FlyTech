@@ -58,7 +58,7 @@ function ProductsContent() {
     if (selectedBrands.length > 0) params.brand = selectedBrands.join(',');
     if (maxPrice < priceRange.max) params.maxPrice = maxPrice;
 
-    Promise.all([getProducts(params), getProductsWithOffers()]).then(([filtered, withOffers]) => {
+    Promise.all([getProducts(params), getProductsWithOffers().catch(() => ({ data: [] }))]).then(([filtered, withOffers]) => {
       const offerMap = {};
       (withOffers.data || []).forEach(p => { offerMap[p._id] = p; });
       let prods = (filtered.data.products || []).map(p => offerMap[p._id] || p);
