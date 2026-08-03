@@ -65,7 +65,7 @@ export default function Footer() {
             <span className="font-black text-sm tracking-widest uppercase">Robo Flytech</span>
           </div>
           <p className="text-xs text-gray-500 leading-relaxed mb-3">
-            Premium drones, RC cars, gadgets & accessories. Built for performance.
+            Empowering innovation through drones, robotics, RC products, DIY electronics &amp; STEM kits for students, hobbyists, and professionals across India.
           </p>
           <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-gray-500 mb-2">FOLLOW US</p>
           <div className="flex items-center gap-3">
@@ -106,16 +106,31 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Support */}
+        {/* Contact */}
         <div>
-          <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-gray-500 mb-3">SUPPORT</p>
+          <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-gray-500 mb-3">CONTACT</p>
           <div className="space-y-2">
             <a href="https://wa.me/918765034655" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
               <MessageCircle size={14} className="text-[#25D366]" />
-              WhatsApp Support
+              +91 87650 34655
             </a>
-            <p className="text-xs text-gray-600">Message us anytime for instant help</p>
+            <a href="tel:05462466053"
+              className="block text-sm text-gray-400 hover:text-white transition-colors">
+              05462-466053 (Landline)
+            </a>
+            <a href="mailto:contact.roboflytech@gmail.com"
+              className="block text-sm text-gray-400 hover:text-white transition-colors">
+              contact.roboflytech@gmail.com
+            </a>
+            <a href="https://www.roboflytech.in" target="_blank" rel="noopener noreferrer"
+              className="block text-sm text-gray-400 hover:text-white transition-colors">
+              www.roboflytech.in
+            </a>
+            <p className="text-xs text-gray-600 leading-relaxed">
+              First Floor, Harra Ki Chungi,<br />Balrampur, Azamgarh, UP, India
+            </p>
+            <p className="text-xs text-gray-600">Mon – Sat: 10:00 AM – 7:00 PM</p>
           </div>
         </div>
       </div>

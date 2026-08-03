@@ -4,10 +4,9 @@ import { motion } from 'framer-motion';
 import Navbar from '@/components/store/Navbar';
 import Footer from '@/components/store/Footer';
 import Link from 'next/link';
-import { ArrowRight, Zap, Package, Shield } from 'lucide-react';
+import { ArrowRight, Zap, Package, Shield, MapPin, Mail, Phone, Clock } from 'lucide-react';
 import { PageTransition, FadeInView, StaggerContainer, StaggerItem } from '@/components/Motion';
 
-// ── Number counter hook ──────────────────────────────────────────────────────
 function useCountUp(target, duration = 1800, start = false) {
   const [count, setCount] = useState(0);
   useEffect(() => {
@@ -16,7 +15,6 @@ function useCountUp(target, duration = 1800, start = false) {
     const step = (timestamp) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
-      // ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setCount(Math.floor(eased * target));
       if (progress < 1) requestAnimationFrame(step);
@@ -26,16 +24,12 @@ function useCountUp(target, duration = 1800, start = false) {
   return count;
 }
 
-// ── Stat item with counter ───────────────────────────────────────────────────
 function StatItem({ value, label, index }) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
-
-  // Parse numeric part and suffix (e.g. "5K+" → 5, "K+") ("98%" → 98, "%")
   const match = value.match(/^(\d+)(.*)$/);
   const numeric = match ? parseInt(match[1]) : 0;
   const suffix = match ? match[2] : value;
-
   const count = useCountUp(numeric, 1600, visible);
 
   useEffect(() => {
@@ -64,45 +58,62 @@ function StatItem({ value, label, index }) {
   );
 }
 
-// ── Data ─────────────────────────────────────────────────────────────────────
 const STATS = [
-  { value: '5K+',  label: 'Products in stock' },
-  { value: '12K+', label: 'Happy customers' },
-  { value: '98%',  label: 'Satisfaction rate' },
-  { value: '2Day', label: 'Express shipping' },
+  { value: '500+',  label: 'Products available' },
+  { value: '10K+',  label: 'Happy customers' },
+  { value: '98%',   label: 'Satisfaction rate' },
+  { value: '6Day',  label: 'Days a week support' },
 ];
 
 const PILLARS = [
   {
     icon: Package,
     title: 'Our Mission',
-    body: 'We make it easy to find the right drone, replacement part, or accessory for your next flight. Whether you are building, repairing, or upgrading, Robo Flytech delivers trusted products and friendly support.',
+    body: 'To inspire innovation by providing high-quality technology products, educational resources, and excellent customer support that help people learn, build, and create with confidence.',
   },
   {
     icon: Zap,
     title: 'What We Offer',
     list: [
-      'Drones for hobbyists, pros, and FPV pilots',
-      'Propellers, motors, frames, and batteries',
-      'Cameras, controllers, and flight electronics',
-      'Voci Toci gadgets, smart accessories, and repair kits',
+      'DIY Drone Kits & FPV Racing Drones',
+      'Drone Spare Parts & Accessories',
+      'RC Cars & RC Components',
+      'Walkie-Talkies & Gadgets',
+      'STEM & Robotics Learning Kits',
+      'Electronic Modules & Components',
+      'Educational DIY Projects',
+      'Custom Technology Solutions',
     ],
   },
   {
     icon: Shield,
     title: 'Why Choose Us',
-    body: 'Robo Flytech combines curated products with fast shipping and dependable service. We focus on high-performance drone hardware and genuine replacement parts so your fleet stays airborne.',
+    list: [
+      'Premium Quality Products',
+      'Competitive Prices',
+      'Secure Online Shopping',
+      'Fast Order Processing',
+      'Responsive Customer Support',
+      'Continuous Product Innovation',
+    ],
   },
 ];
 
 const DNA = [
-  { label: 'Innovation', desc: 'Constantly expanding our catalogue with the latest flight tech.' },
-  { label: 'Quality',    desc: 'Every product is selected for reliability and performance.' },
-  { label: 'Support',    desc: 'Real expertise from people who fly and build drones.' },
-  { label: 'Speed',      desc: 'Fast dispatch and express delivery so you never wait.' },
+  { label: 'Innovation',  desc: 'Constantly expanding our catalogue with the latest drones, robotics, and STEM technology.' },
+  { label: 'Quality',     desc: 'Every product is carefully selected for reliability, performance, and value.' },
+  { label: 'Education',   desc: 'We believe technology is about learning, creating, and inspiring the next generation.' },
+  { label: 'Accessibility', desc: 'Making advanced technology affordable and enjoyable for students, hobbyists, and professionals.' },
 ];
 
-// ── Page ─────────────────────────────────────────────────────────────────────
+const CONTACT = [
+  { icon: MapPin, label: 'Address',   value: 'First Floor, Harra Ki Chungi, Balrampur, Azamgarh, Uttar Pradesh, India' },
+  { icon: Mail,   label: 'Email',     value: 'contact.roboflytech@gmail.com', href: 'mailto:contact.roboflytech@gmail.com' },
+  { icon: Phone,  label: 'Phone / WhatsApp', value: '+91 87650 34655', href: 'tel:+918765034655' },
+  { icon: Phone,  label: 'Office Landline',   value: '05462-466053', href: 'tel:05462466053' },
+  { icon: Clock,  label: 'Hours',     value: 'Mon – Sat: 10:00 AM – 7:00 PM  |  Sunday: Closed' },
+];
+
 export default function AboutPage() {
   return (
     <>
@@ -128,7 +139,7 @@ export default function AboutPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
                 >
-                  Drone parts,<br />gear &amp; gadgets<br />for modern <span className="text-[#dc2626] italic">flyers.</span>
+                  Drones, robotics<br />&amp; STEM kits<br />for every <span className="text-[#dc2626] italic">innovator.</span>
                 </motion.h1>
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
@@ -136,7 +147,7 @@ export default function AboutPage() {
                   transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
                 >
                   <p className="text-gray-500 text-base leading-relaxed mb-6">
-                    Robo Flytech is the destination for drone enthusiasts, pilots, and builders. We specialize in high-quality drones, replacement components, flight accessories, and unique Voci Toci gadgets for every mission.
+                    Robo Flytech is an Indian technology and e-commerce brand dedicated to bringing innovative drones, robotics, RC products, DIY electronics, and STEM education kits to students, hobbyists, creators, educators, and professionals across India.
                   </p>
                   <Link href="/products" className="btn-primary inline-flex items-center gap-2">
                     Shop now <ArrowRight size={15} />
@@ -146,7 +157,7 @@ export default function AboutPage() {
             </div>
           </section>
 
-          {/* ── STATS (number counters) ── */}
+          {/* ── STATS ── */}
           <section className="border-b border-gray-200">
             <div className="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-200">
               {STATS.map((s, i) => (
@@ -191,12 +202,12 @@ export default function AboutPage() {
           <section className="border-b border-gray-200">
             <div className="max-w-[1400px] mx-auto px-6 py-14 grid md:grid-cols-2 gap-10 items-center">
               <FadeInView>
-                <p className="section-label mb-4">[ 003 / OUR DNA ]</p>
+                <p className="section-label mb-4">[ 003 / OUR VISION ]</p>
                 <h2 className="font-black text-[2rem] md:text-[3rem] leading-[0.92] tracking-[-0.03em] text-[#0a0a0a] mb-5">
-                  Driven by<br />innovation &amp;<br />built for <span className="text-[#dc2626] italic">performance.</span>
+                  India's most<br />trusted destination<br />for <span className="text-[#dc2626] italic">innovation.</span>
                 </h2>
                 <p className="text-sm text-gray-500 leading-relaxed max-w-sm">
-                  From beginner kits to advanced racing drones, Robo Flytech is built for people who love technology, flight, and the future of drone mobility. Every item meets demanding standards for reliability, performance, and value.
+                  To become one of India's most trusted online destinations for drones, robotics, DIY electronics, and STEM technology — building a community where innovation, creativity, and practical learning come together.
                 </p>
               </FadeInView>
               <StaggerContainer className="grid grid-cols-2 gap-0 border-l border-t border-gray-200">
@@ -212,14 +223,40 @@ export default function AboutPage() {
             </div>
           </section>
 
+          {/* ── CONTACT ── */}
+          <section className="border-b border-gray-200">
+            <div className="max-w-[1400px] mx-auto px-6 py-14">
+              <FadeInView>
+                <p className="section-label mb-8">[ 004 / CONTACT US ]</p>
+              </FadeInView>
+              <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-4 gap-0 border-l border-t border-gray-200">
+                {CONTACT.map(({ icon: Icon, label, value, href }) => (
+                  <StaggerItem key={label}>
+                    <div className="border-r border-b border-gray-200 p-8 h-full">
+                      <div className="w-9 h-9 bg-[#0a0a0a] flex items-center justify-center mb-5">
+                        <Icon size={17} className="text-white" />
+                      </div>
+                      <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-[#dc2626] mb-2">{label}</p>
+                      {href ? (
+                        <a href={href} className="text-sm text-gray-500 leading-relaxed hover:text-[#dc2626] transition-colors">{value}</a>
+                      ) : (
+                        <p className="text-sm text-gray-500 leading-relaxed">{value}</p>
+                      )}
+                    </div>
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+            </div>
+          </section>
+
           {/* ── CTA ── */}
           <FadeInView>
             <section className="bg-[#0a0a0a]">
               <div className="max-w-[1400px] mx-auto px-6 py-16 flex flex-col md:flex-row items-center justify-between gap-8">
                 <div>
-                  <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-gray-500 mb-3">[ 004 / GET STARTED ]</p>
+                  <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-gray-500 mb-3">[ 005 / GET STARTED ]</p>
                   <h2 className="font-black text-[2rem] md:text-[3rem] leading-[0.92] tracking-[-0.03em] text-white">
-                    Ready to take<br />flight?
+                    Build. Learn.<br />Create. <span className="text-[#dc2626] italic">Innovate.</span>
                   </h2>
                 </div>
                 <div className="flex gap-3">
@@ -227,10 +264,10 @@ export default function AboutPage() {
                     className="flex items-center gap-2 bg-white text-[#0a0a0a] px-7 py-3.5 text-sm font-bold hover:bg-[#dc2626] hover:text-white transition-colors">
                     Shop now <ArrowRight size={15} />
                   </Link>
-                  <Link href="/products?deals=true"
+                  <a href="https://wa.me/918765034655" target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-2 border border-white/20 text-white px-7 py-3.5 text-sm font-semibold hover:border-white transition-colors">
-                    Today's deals <Zap size={13} />
-                  </Link>
+                    WhatsApp us <Zap size={13} />
+                  </a>
                 </div>
               </div>
             </section>
