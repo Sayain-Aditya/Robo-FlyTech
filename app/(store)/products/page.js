@@ -60,7 +60,7 @@ function ProductsContent() {
 
     Promise.all([getProducts(params), getProductsWithOffers().catch(() => ({ data: [] }))]).then(([filtered, withOffers]) => {
       const offerMap = {};
-      (withOffers.data || []).forEach(p => { offerMap[p._id] = p; });
+      (withOffers.data || []).forEach(p => { if (p.offerPrice) offerMap[p._id] = p; });
       let prods = (filtered.data.products || []).map(p => offerMap[p._id] || p);
       if (sort === 'price-asc')  prods = [...prods].sort((a, b) => (a.offerPrice||a.price) - (b.offerPrice||b.price));
       if (sort === 'price-desc') prods = [...prods].sort((a, b) => (b.offerPrice||b.price) - (a.offerPrice||a.price));

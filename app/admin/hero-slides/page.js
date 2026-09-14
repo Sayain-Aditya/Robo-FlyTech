@@ -318,20 +318,33 @@ export default function AdminHeroSlidesPage() {
                     </div>
                     <div>
                       <label className="block text-xs text-gray-500 uppercase tracking-wider mb-1.5">Button Link</label>
-                      <select className="input-field" value={form.buttonLink} onChange={e => set('buttonLink', e.target.value)}>
-                        <option value="/products">Products Page</option>
-                        <option value="/cart">Cart</option>
+                      <select className="input-field" value={
+                        ['/products', '/cart', '/about', '/products?deals=true', '/'].includes(form.buttonLink)
+                          ? form.buttonLink
+                          : form.buttonLink?.startsWith('/products/')
+                          ? 'product-page'
+                          : 'buy-now'
+                      } onChange={e => {
+                        const val = e.target.value;
+                        if (val === 'product-page' || val === 'buy-now') set('buttonLink', val);
+                        else { set('buttonLink', val); set('product', null); }
+                      }}>
+                        <option value="/products">All Products Page</option>
+                        <option value="/products?deals=true">Deals Page</option>
                         <option value="/about">About Us</option>
-                        <option value="/products?deals=true">Deals</option>
                         <option value="/">Home</option>
-                        <option value="buy-now">Buy Now (Select Product Below)</option>
+                        <option value="/cart">Cart</option>
+                        <option value="product-page">Go to Product Page (select below)</option>
+                        <option value="buy-now">Buy Now / Checkout (select below)</option>
                       </select>
                     </div>
                   </div>
 
-                  {form.buttonLink === 'buy-now' && (
+                  {(form.buttonLink === 'buy-now' || form.buttonLink === 'product-page' || form.buttonLink?.startsWith('/products/')) && (
                     <div>
-                      <label className="block text-xs text-gray-500 uppercase tracking-wider mb-1.5">Select Product for Buy Now</label>
+                      <label className="block text-xs text-gray-500 uppercase tracking-wider mb-1.5">
+                        {form.buttonLink === 'buy-now' ? 'Select Product — goes to Checkout' : 'Select Product — goes to Product Page'}
+                      </label>
                       {products.length === 0 ? (
                         <p className="text-xs text-gray-400 py-2">Loading products...</p>
                       ) : (
@@ -343,26 +356,28 @@ export default function AdminHeroSlidesPage() {
                             onChange={e => setProductSearch(e.target.value)}
                             className="input-field mb-2"
                           />
-                          <select 
-                            className="input-field" 
-                            value={form.product || ''} 
-                            onChange={e => set('product', e.target.value || null)}
+                          <select
+                            className="input-field"
+                            value={form.product || ''}
+                            onChange={e => {
+                              const id = e.target.value;
+                              set('product', id || null);
+                              if (form.buttonLink !== 'buy-now') set('buttonLink', id ? `/products/${id}` : 'product-page');
+                            }}
                             size="8">
                             <option value="">-- Choose a product --</option>
                             {products
-                              .filter(p => 
-                                productSearch === '' || 
+                              .filter(p =>
+                                productSearch === '' ||
                                 p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
-                                (p.brand && p.brand.toLowerCase().includes(productSearch.toLowerCase())) ||
-                                (p.category && p.category.toLowerCase().includes(productSearch.toLowerCase()))
+                                (p.brand && p.brand.toLowerCase().includes(productSearch.toLowerCase()))
                               )
                               .map(p => (
-                                <option key={p._id} value={p._id}>{p.name} - ₹{p.price}</option>
+                                <option key={p._id} value={p._id}>{p.name} — ₹{p.price}</option>
                               ))}
                           </select>
                         </>
                       )}
-                      <p className="text-[10px] text-gray-400 mt-1">This product will be added to cart and user will go to checkout</p>
                     </div>
                   )}
 

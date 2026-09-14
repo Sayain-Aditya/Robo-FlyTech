@@ -177,8 +177,14 @@ export default function ProductForm({ initial, onSuccess, onClose }) {
     setLoading(true);
     setError('');
     try {
-      if (isEdit) await updateProduct(initial._id, form);
-      else        await createProduct(form);
+      if (isEdit) await updateProduct(initial._id, {
+        ...form,
+        originalPrice: form.originalPrice !== '' && Number(form.originalPrice) > 0 ? form.originalPrice : null,
+      });
+      else await createProduct({
+        ...form,
+        originalPrice: form.originalPrice !== '' && Number(form.originalPrice) > 0 ? form.originalPrice : null,
+      });
       onSuccess?.();
       onClose?.();
     } catch (err) {
@@ -291,17 +297,27 @@ export default function ProductForm({ initial, onSuccess, onClose }) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs text-gray-500 uppercase tracking-wider mb-1.5">Price (₹)</label>
+          <label className="block text-xs text-gray-500 uppercase tracking-wider mb-1.5">Selling Price (₹) <span className="normal-case text-gray-400">— actual price customer pays</span></label>
           <input className="input-field" type="number" min="0" required
             value={form.price} onChange={e => set('price', e.target.value)} />
         </div>
         <div>
-          <label className="block text-xs text-gray-500 uppercase tracking-wider mb-1.5">Original Price (₹) <span className="normal-case text-gray-400">— for Deal badge</span></label>
+          <label className="block text-xs text-gray-500 uppercase tracking-wider mb-1.5">MRP / Original Price (₹) <span className="normal-case text-gray-400">— must be higher than selling price</span></label>
           <input className="input-field" type="number" min="0"
             placeholder="Leave empty if no deal"
             value={form.originalPrice} onChange={e => set('originalPrice', e.target.value)} />
         </div>
       </div>
+      {form.price && form.originalPrice && Number(form.originalPrice) > Number(form.price) && (
+        <p className="text-[11px] text-green-600 -mt-2">
+          ✓ Discount badge will show: <span className="font-bold">-{Math.round((1 - Number(form.price) / Number(form.originalPrice)) * 100)}%</span>
+        </p>
+      )}
+      {form.price && form.originalPrice && Number(form.originalPrice) <= Number(form.price) && (
+        <p className="text-[11px] text-red-500 -mt-2">
+          ⚠ MRP must be greater than Selling Price for a discount badge to appear.
+        </p>
+      )}
 
       <div>
         <label className="block text-xs text-gray-500 uppercase tracking-wider mb-1.5">Stock</label>

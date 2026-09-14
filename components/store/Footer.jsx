@@ -128,7 +128,7 @@ export default function Footer() {
               www.roboflytech.in
             </a>
             <p className="text-xs text-gray-600 leading-relaxed">
-              First Floor (Above SBI Building),<br />PSC Mod, Pahadpur, Balrampur,<br />Azamgarh, Uttar Pradesh - 276001
+              1st Floor, Nearby SBI Bank,<br />Balrampur, Azamgarh,<br />Uttar Pradesh - 276001
             </p>
             <p className="text-xs text-gray-600">Mon – Sat: 10:00 AM – 7:00 PM</p>
           </div>

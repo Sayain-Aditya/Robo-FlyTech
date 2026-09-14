@@ -107,7 +107,7 @@ const DNA = [
 ];
 
 const CONTACT = [
-  { icon: MapPin, label: 'Address',   value: 'First Floor, Harra Ki Chungi, Balrampur, Azamgarh, Uttar Pradesh, India' },
+  { icon: MapPin, label: 'Address',   value: '1st Floor, Nearby SBI Bank, Balrampur, Azamgarh, Uttar Pradesh 276001' },
   { icon: Mail,   label: 'Email',     value: 'contact.roboflytech@gmail.com', href: 'mailto:contact.roboflytech@gmail.com' },
   { icon: Phone,  label: 'Phone / WhatsApp', value: '+91 87650 34655', href: 'tel:+918765034655' },
   { icon: Phone,  label: 'Office Landline',   value: '05462-466053', href: 'tel:05462466053' },

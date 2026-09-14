@@ -27,19 +27,10 @@ export default function ProductCard({ product, index }) {
   const isNew =
     product.createdAt &&
     Date.now() - new Date(product.createdAt) < 7 * 24 * 60 * 60 * 1000;
-  const isDeal = product.originalPrice && product.originalPrice > product.price;
   const hasOffer = product.offerPrice && product.offerPrice < product.price;
+  const isDeal = product.originalPrice && Number(product.originalPrice) > Number(product.price);
   const displayPrice = hasOffer ? product.offerPrice : product.price;
-  const displayOriginal = hasOffer
-    ? product.price
-    : isDeal
-      ? product.originalPrice
-      : null;
-  const discountPct = hasOffer
-    ? Math.round((1 - product.offerPrice / product.price) * 100)
-    : isDeal
-      ? Math.round((1 - product.price / product.originalPrice) * 100)
-      : null;
+  const displayOriginal = hasOffer ? product.price : isDeal ? product.originalPrice : null;
 
   return (
     <>
@@ -57,7 +48,7 @@ export default function ProductCard({ product, index }) {
         {/* Top-left badge — only New and discount % */}
         <div className="absolute top-2 left-2 flex gap-1">
           {isNew && <span className="badge-new">New</span>}
-          {discountPct && <span className="badge-deal">-{discountPct}%</span>}
+          {(hasOffer || isDeal) && <span className="badge-deal">Sale</span>}
         </div>
         {/* Top-right share button */}
         <button

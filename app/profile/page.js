@@ -5,7 +5,7 @@ import Navbar from '@/components/store/Navbar';
 import Footer from '@/components/store/Footer';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/Toast';
-import { getProfile, updateProfile, changePassword, getMyOrders, getAddresses, addAddress, deleteAddress, getOrderById } from '@/lib/api';
+import { getProfile, updateProfile, changePassword, getMyOrders, getAddresses, addAddress, updateAddress, deleteAddress, getOrderById } from '@/lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, MapPin, Lock, ShoppingBag, Save, Eye, EyeOff, Package, LogOut, Settings, Heart, X, ChevronRight, Truck, CreditCard, Tag, PartyPopper, Smartphone, AlertCircle } from 'lucide-react';
 import OrderStatusBar from '@/components/OrderStatusBar';
@@ -42,17 +42,15 @@ export default function ProfilePage() {
   const [addrModal, setAddrModal] = useState(false);
   const [addrForm, setAddrForm] = useState(EMPTY_ADDR);
   const [addrLoading, setAddrLoading] = useState(false);
+  const [editingAddrId, setEditingAddrId] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [orderDetailLoading, setOrderDetailLoading] = useState(false);
 
   const openOrderDetail = async (orderId) => {
-    setOrderDetailLoading(true);
     setSelectedOrder({ _id: orderId });
     try {
       const { data } = await getOrderById(orderId);
       setSelectedOrder(data);
     } catch { setSelectedOrder(null); }
-    finally { setOrderDetailLoading(false); }
   };
 
   useEffect(() => {
@@ -96,12 +94,18 @@ export default function ProfilePage() {
   const handleAddressSave = async (e) => {
     e.preventDefault(); setAddrLoading(true);
     try {
-      const res = await addAddress(addrForm);
+      let res;
+      if (editingAddrId) {
+        res = await updateAddress(editingAddrId, addrForm);
+      } else {
+        res = await addAddress(addrForm);
+      }
       setAddresses(res.data || []);
-      showToast('Address saved');
+      showToast(editingAddrId ? 'Address updated' : 'Address saved');
       setAddrModal(false);
       setAddrForm(EMPTY_ADDR);
-    } catch (err) { showToast('Failed to save address', 'error'); }
+      setEditingAddrId(null);
+    } catch { showToast('Failed to save address', 'error'); }
     finally { setAddrLoading(false); }
   };
 
@@ -268,7 +272,7 @@ export default function ProfilePage() {
                     exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="font-black text-lg tracking-tight text-[#0a0a0a]">Saved addresses</h2>
-                      <button onClick={() => { setAddrForm(EMPTY_ADDR); setAddrModal(true); }}
+                      <button onClick={() => { setAddrForm(EMPTY_ADDR); setEditingAddrId(null); setAddrModal(true); }}
                         className="btn-primary flex items-center gap-2 px-4 py-2 text-xs">
                         + Add
                       </button>
@@ -279,7 +283,7 @@ export default function ProfilePage() {
                         <MapPin size={32} className="text-gray-300 mx-auto mb-3" />
                         <p className="font-bold text-gray-500 mb-1">No saved addresses</p>
                         <p className="text-sm text-gray-400 mb-4">Add an address to speed up checkout</p>
-                        <button onClick={() => { setAddrForm(EMPTY_ADDR); setAddrModal(true); }}
+                        <button onClick={() => { setAddrForm(EMPTY_ADDR); setEditingAddrId(null); setAddrModal(true); }}
                           className="btn-primary px-6 py-2.5 text-xs">Add Address</button>
                       </div>
                     ) : (
@@ -290,8 +294,13 @@ export default function ProfilePage() {
                             <p className="text-xs text-gray-500 mt-0.5">{addr.phone}</p>
                             <p className="text-sm text-gray-500 mt-1">{addr.address}{addr.landmark ? `, ${addr.landmark}` : ''}</p>
                             <p className="text-sm text-gray-500">{addr.city}, {addr.state} — {addr.pin}, {addr.country}</p>
-                            <button onClick={() => removeAddress(addr._id)}
-                              className="mt-3 text-xs text-[#dc2626] hover:text-red-700 font-semibold transition-colors">Remove</button>
+                            <div className="flex items-center gap-3 mt-3">
+                              <button onClick={() => { setAddrForm({ fullName: addr.fullName, phone: addr.phone, address: addr.address, landmark: addr.landmark || '', city: addr.city, state: addr.state, pin: addr.pin, country: addr.country }); setEditingAddrId(addr._id); setAddrModal(true); }}
+                                className="text-xs text-[#0a0a0a] hover:text-[#dc2626] font-semibold transition-colors">Edit</button>
+                              <span className="text-gray-300">|</span>
+                              <button onClick={() => removeAddress(addr._id)}
+                                className="text-xs text-[#dc2626] hover:text-red-700 font-semibold transition-colors">Remove</button>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -379,7 +388,7 @@ export default function ProfilePage() {
               className="fixed inset-x-0 bottom-0 md:inset-0 md:flex md:items-center md:justify-center z-50 p-0 md:p-4 pointer-events-none">
               <div className="bg-white w-full md:max-w-md md:border md:border-gray-200 shadow-2xl max-h-[90vh] overflow-y-auto pointer-events-auto">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 sticky top-0 bg-white">
-                  <h2 className="font-black text-base tracking-tight">Add Address</h2>
+                  <h2 className="font-black text-base tracking-tight">{editingAddrId ? 'Edit Address' : 'Add Address'}</h2>
                   <button onClick={() => setAddrModal(false)} className="p-1 text-gray-400 hover:text-gray-700">
                     <X size={18} />
                   </button>
@@ -456,7 +465,7 @@ export default function ProfilePage() {
                 </button>
               </div>
 
-              {orderDetailLoading ? (
+              {!selectedOrder.status ? (
                 <div className="flex-1 flex items-center justify-center overflow-y-auto">
                   <div className="w-8 h-8 border-2 border-[#0a0a0a] border-t-transparent rounded-full animate-spin" />
                 </div>

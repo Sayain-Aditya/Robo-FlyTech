@@ -58,15 +58,9 @@ export default function ProductDetailPage() {
   );
 
   const hasOffer     = product.offerPrice && product.offerPrice < product.price;
+  const isDeal       = product.originalPrice && Number(product.originalPrice) > Number(product.price);
   const displayPrice = hasOffer ? product.offerPrice : product.price;
-  // MRP: if offer active use base price, else use originalPrice (deal badge), else null
-  const mrpPrice     = hasOffer
-    ? (product.originalPrice || product.price)
-    : (product.originalPrice && product.originalPrice > product.price ? product.originalPrice : null);
-  const discountPct  = mrpPrice
-    ? Math.round((1 - displayPrice / mrpPrice) * 100)
-    : null;
-  const savedAmount  = mrpPrice ? mrpPrice - displayPrice : 0;
+  const mrpPrice     = hasOffer ? product.price : isDeal ? product.originalPrice : null;
 
   // Build specs from product.specifications array
   const specs = Array.isArray(product.specifications)
@@ -132,9 +126,9 @@ export default function ProductDetailPage() {
 
                 {/* Badges */}
                 <div className="absolute top-4 left-4 flex flex-col gap-1.5">
-                  {discountPct && (
+                  {(hasOffer || isDeal) && (
                     <span className="bg-[#dc2626] text-white text-[10px] font-bold tracking-widest uppercase px-2.5 py-1">
-                      -{discountPct}%
+                      Sale
                     </span>
                   )}
                   {product.offerBadge && (
@@ -195,7 +189,7 @@ export default function ProductDetailPage() {
               )}
 
               {/* Price */}
-              <div className="flex items-baseline gap-3 mb-2">
+              <div className="flex items-baseline gap-3 mb-6">
                 <span className="font-black text-[2.2rem] tracking-[-0.03em] text-[#0a0a0a]">
                   ₹{displayPrice.toLocaleString()}
                 </span>
@@ -204,13 +198,7 @@ export default function ProductDetailPage() {
                     ₹{mrpPrice.toLocaleString()}
                   </span>
                 )}
-                {discountPct && (
-                  <span className="text-sm font-bold text-[#dc2626]">{discountPct}% OFF</span>
-                )}
               </div>
-              {savedAmount > 0 && (
-                <p className="text-sm font-bold text-green-600 mb-6">You Save ₹{savedAmount.toLocaleString()}</p>
-              )}
 
               {/* Description */}
               {product.description && (

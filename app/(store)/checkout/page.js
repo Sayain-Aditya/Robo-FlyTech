@@ -327,7 +327,7 @@ function CheckoutContent() {
                                       <p className="text-xs text-gray-500">{addr.city}, {addr.state} — {addr.pin}, {addr.country}</p>
                                     </div>
                                     <div className="flex gap-1 shrink-0">
-                                      <button onClick={e => { e.stopPropagation(); setEditingId(addr._id); setEditForm({ fullName: addr.fullName, phone: addr.phone, address: addr.address, city: addr.city, pin: addr.pin, country: addr.country }); }}
+                                      <button onClick={e => { e.stopPropagation(); setEditingId(addr._id); setEditForm({ fullName: addr.fullName, phone: addr.phone, address: addr.address, landmark: addr.landmark || '', city: addr.city, state: addr.state || '', pin: addr.pin, country: addr.country }); }}
                                         className="p-1.5 text-gray-300 hover:text-[#0a0a0a] transition-colors"><Edit2 size={13} /></button>
                                       <button onClick={e => { e.stopPropagation(); handleDeleteAddress(addr._id); }}
                                         className="p-1.5 text-gray-300 hover:text-[#dc2626] transition-colors"><Trash2 size={13} /></button>
